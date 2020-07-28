@@ -12,6 +12,7 @@ add_library (flplusplus SHARED
     "src/screenshot.cpp"
     "src/savegame.cpp"
     "src/log.cpp"
+    "src/codec.cpp"
 )
 target_link_libraries(flplusplus shlwapi gdiplus shell32)
 target_include_directories(flplusplus PUBLIC "include")

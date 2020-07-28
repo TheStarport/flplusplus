@@ -5,6 +5,7 @@
 #include "config.h"
 #include "screenshot.h"
 #include "savegame.h"
+#include "codec.h"
 #include "log.h"
 
 #include <windows.h>
@@ -52,6 +53,7 @@ void init_patches()
     graphics::init();
     screenshot::init();
     savegame::init();
+    codec::init();
     log::writeline("flplusplus: all patched");
 }
 

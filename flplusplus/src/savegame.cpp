@@ -33,3 +33,8 @@ void savegame::init()
     unsigned char buffer[5];
     patch::detour(origFunc, (void*)UserDataPath, buffer);
 }
+
+void savegame::get_save_folder(char *buffer)
+{
+    UserDataPath(buffer);
+}
