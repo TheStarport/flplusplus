@@ -7,6 +7,7 @@
 #include "savegame.h"
 #include "codec.h"
 #include "log.h"
+#include "adoxa/adoxa.h"
 
 #include <windows.h>
 #include <stdlib.h>
@@ -54,6 +55,7 @@ void init_patches()
     screenshot::init();
     savegame::init();
     codec::init();
+    adoxa::patch();
     log::writeline("flplusplus: all patched");
 }
 

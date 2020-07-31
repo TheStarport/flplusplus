@@ -8,6 +8,9 @@ flplusplus is a client-side hook for Freelancer providing the following features
 - Configurable save game location
 - PNG screenshots
 
+The following plugins by adoxa are also included:
+
+- Wheel Scroll
 
 Build on linux using build_linux.sh (CMake 3.13 and mingw-w64 required)
 

@@ -13,6 +13,8 @@ add_library (flplusplus SHARED
     "src/savegame.cpp"
     "src/log.cpp"
     "src/codec.cpp"
+    "src/adoxa/adoxa.cpp"
+    "src/adoxa/wheelscroll.cpp"
 )
 target_link_libraries(flplusplus shlwapi gdiplus shell32)
 target_include_directories(flplusplus PUBLIC "include")
