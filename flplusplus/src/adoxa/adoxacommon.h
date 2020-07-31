@@ -7,6 +7,9 @@
 #define NAKED	 __declspec(naked)
 #define FASTCALL __fastcall
 
+#ifdef __GNUC__
+#pragma ms_struct on
+#endif
 
 static DWORD x_dummy;
 #define ProtectX( addr, size ) \

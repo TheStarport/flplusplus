@@ -20,12 +20,12 @@ typedef void *(__cdecl *ScriptLoadPtr)(const char*);
 ScriptLoadPtr _ThornScriptLoad;
 
 struct LateHookEntry {
-    flplusplus::cb_latehook func;
+    flplusplus_cblatehook func;
     void *data;
 };
 std::vector<LateHookEntry> lh;
 
-FLPEXPORT void flplusplus::add_latehook(flplusplus::cb_latehook hkfunc, void *userData)
+FLPEXPORT void flplusplus_add_latehook(flplusplus_cblatehook hkfunc, void *userData)
 {
     LateHookEntry e;
     e.func = hkfunc;
