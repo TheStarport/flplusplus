@@ -21,7 +21,7 @@ static void do_linking()
     FDUMP = (pFDUMP*)GetProcAddress(dacom, "FDUMP");
 }
 
-void log::writeline(const char *line)
+void logger::writeline(const char *line)
 {
     do_linking();
     (*FDUMP)(1048578, "%s\n", line);
@@ -43,19 +43,19 @@ static DWORD fdump_timestamped(DWORD unk, const char *fmt, ...)
     return fdump_original(unk, "[%s] %s", timestamp, buffer);
 }
 
-void log::patch_fdump()
+void logger::patch_fdump()
 {
     do_linking();
     fdump_original = *FDUMP;
     *FDUMP = (pFDUMP)fdump_timestamped;
 }
 
-void log::writeformat(const char *fmt, ...)
+void logger::writeformat(const char *fmt, ...)
 {
     char buffer[4096];
     va_list args;
     va_start (args, fmt);
     vsnprintf(buffer, 4096, fmt, args);
     va_end (args);
-    log::writeline(buffer);
+    logger::writeline(buffer);
 }

@@ -41,22 +41,22 @@ void init_config()
     PathRemoveFileSpecA(path);
     PathAppendA(path, "flplusplus.ini");
     if(PathFileExistsA(path)) {
-        log::writeformat("opening flplusplus.ini at %s", path);
+        logger::writeformat("opening flplusplus.ini at %s", path);
         config::init_from_file(path);
     }
 }
 
 void init_patches()
 {
-    log::patch_fdump();
-    log::writeline("flplusplus: installing patches");
+    logger::patch_fdump();
+    logger::writeline("flplusplus: installing patches");
     init_config();
     graphics::init();
     screenshot::init();
     savegame::init();
     codec::init();
     adoxa::patch();
-    log::writeline("flplusplus: all patched");
+    logger::writeline("flplusplus: all patched");
 }
 
 void late_init()
@@ -104,7 +104,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             init_patches();
             install_latehook();
         } else {
-            log::writeline("flplusplus: Version not 1.1, not installing");
+            logger::writeline("flplusplus: Version not 1.1, not installing");
         }
 		break;
     case DLL_THREAD_ATTACH:
