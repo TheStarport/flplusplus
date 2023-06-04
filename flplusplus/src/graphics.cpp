@@ -1,11 +1,15 @@
 #include "graphics.h"
-#include "flplusplus.h"
 #include "patch.h"
 #include "offsets.h"
 #include "config.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <unordered_map>
+
+struct x3 {
+    unsigned char v1, v2, v3;
+};
 
 int patch_lodranges(int scale)
 {
@@ -32,40 +36,25 @@ int patch_lodranges(int scale)
     patch::patch_bytes(OF_LODS_P1, (void*)patch1, 5);
     patch::patch_uint16(OF_LODS_P2, 0x0DD8);
     patch::patch_uint16(OF_LODS_P3, 0xC300);
-    switch(scale) {
-        case 1:
-            patch::patch_x3(OF_LODS_P4, 0x4B, 0x1A, 0x47); //1.5x
-            ren_dist0 *= 1.5;
-            break;
-        case 2:
-            patch::patch_x3(OF_LODS_P4, 0xB4, 0x55, 0x5D); //2.0x
-            ren_dist0 *= 2;
-            break;
-        case 3:
-            patch::patch_x3(OF_LODS_P4, 0x28, 0x4F, 0x5D); //3.0x
-            ren_dist0 *= 3;
-            break;
-        case 4:
-            patch::patch_x3(OF_LODS_P4, 0x9C, 0xFC, 0x5C); //4.0x
-            ren_dist0 *= 4;
-            break;
-        case 5:
-            patch::patch_x3(OF_LODS_P4, 0x64, 0x84, 0x5D); //5.0x
-            ren_dist0 *= 5;
-            break;
-        case 6:
-            patch::patch_x3(OF_LODS_P4, 0x08, 0x4F, 0x5D); //6.0x
-            ren_dist0 *= 6;
-            break;
-        case 7:
-            patch::patch_x3(OF_LODS_P4, 0x50, 0x88, 0x5D); //7.0x
-            ren_dist0 *= 7;
-            break;
-        case 8:
-            patch::patch_x3(OF_LODS_P4, 0x54, 0x23, 0x44); //8.0x
-            ren_dist0 *= 8;
-            break;
+
+    std::unordered_map<int, x3> lods = {
+        { 1, x3{ 0x4B, 0x1A, 0x47 } }, //1.5x
+        { 2, x3{ 0xB4, 0x55, 0x5D } }, //2.0x
+        { 3, x3{ 0x28, 0x4F, 0x5D } }, //3.0x
+        { 4, x3{ 0x9C, 0xFC, 0x5C } }, //4.0x
+        { 5, x3{ 0x64, 0x84, 0x5D } }, //5.0x
+        { 6, x3{ 0x08, 0x4F, 0x5D } }, //6.0x
+        { 7, x3{ 0x50, 0x88, 0x5D } }, //7.0x
+        { 8, x3{ 0x54, 0x23, 0x44 } }  //8.0x
+    };
+
+    const auto it = lods.find(scale);
+
+    if (it != lods.end()) {
+        patch::patch_x3(OF_LODS_P4, it->second.v1, it->second.v2, it->second.v3);
+        ren_dist0 *= scale == 1 ? 1.5f : static_cast<float>(scale);
     }
+
     patch::patch_float(OF_REN_DIST0, ren_dist0);
     patch::patch_float(OF_REN_DIST1, ren_dist1);
     return 1;
