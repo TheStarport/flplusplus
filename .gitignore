@@ -1,1 +1,8 @@
 out/
+cmake-build-*
+
+# Visual Studio
+.vs
+
+# CLion
+.idea
