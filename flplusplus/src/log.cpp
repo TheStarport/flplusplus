@@ -39,7 +39,7 @@ static DWORD fdump_timestamped(DWORD unk, const char *fmt, ...)
     char timestamp[100];
 	std::time(&rawtime);
 	timeinfo = std::localtime(&rawtime);
-	std::strftime(timestamp, 80, "%Y%m%d-%H:%M:%S", timeinfo);
+	std::strftime(timestamp, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
     return fdump_original(unk, "[%s] %s", timestamp, buffer);
 }
 
