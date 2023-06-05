@@ -69,8 +69,8 @@ void graphics::init()
     //FL tries to load this font over Agency FB, screws up UI if it finds it
     //if you have a font named '\b' you have big problems
     const char *garbageFont = "\b\0"; 
-    HMODULE common = GetModuleHandleA("common");
-    patch::patch_bytes((DWORD)common + 0x143DC0, (void*)garbageFont, 2);
+    HMODULE common = GetModuleHandleA("common.dll");
+    patch::patch_bytes((DWORD)common + F_OF_VIBROCENTRICFONT, (void*)garbageFont, 2);
     //lod 0
     patch_lodranges(config::get_config().lodscale);
 }

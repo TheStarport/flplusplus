@@ -78,7 +78,7 @@ void * __cdecl script_load_hook(const char *script)
 
 void install_latehook(void)
 {	
-	HMODULE common = GetModuleHandleA("common");
+	HMODULE common = GetModuleHandleA("common.dll");
 	_ThornScriptLoad = (ScriptLoadPtr)GetProcAddress(common, "?ThornScriptLoad@@YAPAUIScriptEngine@@PBD@Z");
 	thornLoadData = (unsigned char*)malloc(5);
 	patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
