@@ -13,7 +13,7 @@ struct x3 {
 
 int patch_lodranges(int scale)
 {
-    if(scale < 0 || scale > 8) return 0;
+    if(scale < 0 || scale > 10 || scale == 9) return 0;
     
     
     if(scale == 0) {
@@ -38,14 +38,15 @@ int patch_lodranges(int scale)
     patch::patch_uint16(OF_LODS_P3, 0xC300);
 
     std::unordered_map<int, x3> lods = {
-        { 1, x3{ 0x4B, 0x1A, 0x47 } }, //1.5x
+        { 1, x3{ 0x20, 0xA2, 0x5C } }, //1.5x
         { 2, x3{ 0xB4, 0x55, 0x5D } }, //2.0x
         { 3, x3{ 0x28, 0x4F, 0x5D } }, //3.0x
         { 4, x3{ 0x9C, 0xFC, 0x5C } }, //4.0x
         { 5, x3{ 0x64, 0x84, 0x5D } }, //5.0x
         { 6, x3{ 0x08, 0x4F, 0x5D } }, //6.0x
         { 7, x3{ 0x50, 0x88, 0x5D } }, //7.0x
-        { 8, x3{ 0x54, 0x23, 0x44 } }  //8.0x
+        { 8, x3{ 0x54, 0x23, 0x44 } }, //8.0x
+        { 10, x3{ 0xFA, 0x1F, 0x57 } } //10.0x
     };
 
     const auto it = lods.find(scale);
