@@ -47,12 +47,12 @@ void init_config()
     }
 }
 
-void init_patches()
+void init_patches(bool version11)
 {
     logger::patch_fdump();
     logger::writeline("flplusplus: installing patches");
     init_config();
-    graphics::init();
+    graphics::init(version11);
     screenshot::init();
     savegame::init();
     codec::init();
@@ -84,9 +84,15 @@ void install_latehook(void)
 	patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
 }
 
+bool check_version11(void)
+{
+    auto common = (DWORD) GetModuleHandleA("common.dll");
 
+    BYTE* vibrocentricFontOffset = (BYTE*) (common + F_OF_VIBROCENTRICFONT_V11);
+    return (*vibrocentricFontOffset) == 0x56;
+}
 
-int check_nocd(void)
+bool check_nocd(void)
 {
     BYTE* videoDialogOffset = (BYTE*)OF_VIDEODIALOG;
     return (*videoDialogOffset) == 0x84 ||
@@ -101,15 +107,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     switch (ul_reason_for_call)
     {
-    case DLL_PROCESS_ATTACH:
-        if(check_nocd()) {
-            init_patches();
+    case DLL_PROCESS_ATTACH: {
+        if (check_nocd()) {
+            init_patches(check_version11());
             install_latehook();
         } else {
             logger::writeline("flplusplus: Couldn't detect No-CD EXE, not installing");
             return FALSE;
         }
-		break;
+        break;
+    }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
 		break;

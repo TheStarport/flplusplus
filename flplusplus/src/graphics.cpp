@@ -61,16 +61,17 @@ int patch_lodranges(int scale)
     return 1;
 }
 
-void graphics::init()
+void graphics::init(bool version11)
 {
     patch::patch_uint8(OF_VIDEODIALOG, 0x33); //disable unsupported video dialog
     patch::patch_uint16(OF_MAXTEXSIZE, 0x2000); //texture size bug fix
     //replace "Vibrocentric" string
     //FL tries to load this font over Agency FB, screws up UI if it finds it
     //if you have a font named '\b' you have big problems
-    const char *garbageFont = "\b\0"; 
+    const char *garbageFont = "\b\0";
     HMODULE common = GetModuleHandleA("common.dll");
-    patch::patch_bytes((DWORD)common + F_OF_VIBROCENTRICFONT, (void*)garbageFont, 2);
+    unsigned int address = (DWORD) common + (version11 ? F_OF_VIBROCENTRICFONT_V11 : F_OF_VIBROCENTRICFONT_V10);
+    patch::patch_bytes(address, (void*)garbageFont, 2);
     //lod 0
     patch_lodranges(config::get_config().lodscale);
 }

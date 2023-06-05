@@ -1,4 +1,4 @@
 #pragma once
 namespace graphics {
-    void init();
+    void init(bool version11);
 }

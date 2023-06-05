@@ -7,8 +7,8 @@
 
 void codec::init()
 {
-    DWORD soundManager = (DWORD) GetModuleHandleA("soundmanager.dll");
-    DWORD soundStreamer = (DWORD) GetModuleHandleA("soundstreamer.dll");
+    auto soundManager = (DWORD) GetModuleHandleA("soundmanager.dll");
+    auto soundStreamer = (DWORD) GetModuleHandleA("soundstreamer.dll");
 
     //Patch out MP3 warnings
     patch::patch_uint8(soundManager + F_OF_SOUNDMAN_MP3, 0xC3);
