@@ -84,7 +84,7 @@ void install_latehook(void)
 
 
 
-int check_version11(void)
+int check_nocd(void)
 {
     BYTE* videoDialogOffset = (BYTE*)OF_VIDEODIALOG;
     return (*videoDialogOffset) == 0x84 ||
@@ -100,11 +100,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        if(check_version11()) {
+        if(check_nocd()) {
             init_patches();
             install_latehook();
         } else {
-            logger::writeline("flplusplus: Version not 1.1, not installing");
+            logger::writeline("flplusplus: Couldn't detect No-CD EXE, not installing");
+            return FALSE;
         }
 		break;
     case DLL_THREAD_ATTACH:
