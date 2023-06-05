@@ -9,6 +9,7 @@ namespace config {
         unsigned int lodscale;
         const char *savefoldername;
         bool saveindirectory;
+        bool removestartlocationwarning;
     };
     ConfigData& get_config();
 }

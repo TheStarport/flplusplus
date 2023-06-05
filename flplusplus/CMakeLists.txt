@@ -15,6 +15,7 @@ add_library (flplusplus SHARED
     "src/codec.cpp"
     "src/adoxa/adoxa.cpp"
     "src/adoxa/wheelscroll.cpp"
+    "src/startlocation.cpp"
 )
 target_link_libraries(flplusplus shlwapi gdiplus shell32)
 target_include_directories(flplusplus PUBLIC "include")
