@@ -10,7 +10,7 @@
 #include "adoxa/adoxa.h"
 
 #include <windows.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <shlwapi.h>
 #include <vector>
 

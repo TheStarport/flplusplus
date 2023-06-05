@@ -1,7 +1,6 @@
 #include "config.h"
 #include "INIReader.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 
 config::ConfigData conf;
 
