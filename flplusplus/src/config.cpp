@@ -1,7 +1,6 @@
 #include "config.h"
 #include "INIReader.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 
 config::ConfigData conf;
 
@@ -15,6 +14,7 @@ void config::init_defaults()
     conf.lodscale = 0;
     conf.savefoldername = "Freelancer";
     conf.saveindirectory = false;
+    conf.removestartlocationwarning = true;
 }
 void config::init_from_file(char *filename)
 {
@@ -25,4 +25,5 @@ void config::init_from_file(char *filename)
     conf.lodscale = reader.GetInteger("flplusplus", "lod_scale", 0);
     conf.savefoldername = strdup(reader.Get("flplusplus","save_folder_name", "Freelancer").c_str());
     conf.saveindirectory = reader.GetBoolean("flplusplus", "save_in_directory", false);
+    conf.removestartlocationwarning = reader.GetBoolean("flplusplus", "remove_start_location_warning", true);
 }

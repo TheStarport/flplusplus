@@ -6,11 +6,12 @@
 #include "screenshot.h"
 #include "savegame.h"
 #include "codec.h"
+#include "startlocation.h"
 #include "log.h"
 #include "adoxa/adoxa.h"
 
 #include <windows.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <shlwapi.h>
 #include <vector>
 
@@ -46,15 +47,16 @@ void init_config()
     }
 }
 
-void init_patches()
+void init_patches(bool version11)
 {
     logger::patch_fdump();
     logger::writeline("flplusplus: installing patches");
     init_config();
-    graphics::init();
+    graphics::init(version11);
     screenshot::init();
     savegame::init();
     codec::init();
+    startlocation::init();
     adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }
@@ -76,15 +78,21 @@ void * __cdecl script_load_hook(const char *script)
 
 void install_latehook(void)
 {	
-	HMODULE common = GetModuleHandleA("common");
+	HMODULE common = GetModuleHandleA("common.dll");
 	_ThornScriptLoad = (ScriptLoadPtr)GetProcAddress(common, "?ThornScriptLoad@@YAPAUIScriptEngine@@PBD@Z");
 	thornLoadData = (unsigned char*)malloc(5);
 	patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
 }
 
+bool check_version11(void)
+{
+    auto common = (DWORD) GetModuleHandleA("common.dll");
 
+    BYTE* vibrocentricFontOffset = (BYTE*) (common + F_OF_VIBROCENTRICFONT_V11);
+    return (*vibrocentricFontOffset) == 0x56;
+}
 
-int check_version11(void)
+bool check_nocd(void)
 {
     BYTE* videoDialogOffset = (BYTE*)OF_VIDEODIALOG;
     return (*videoDialogOffset) == 0x84 ||
@@ -99,14 +107,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 {
     switch (ul_reason_for_call)
     {
-    case DLL_PROCESS_ATTACH:
-        if(check_version11()) {
-            init_patches();
+    case DLL_PROCESS_ATTACH: {
+        if (check_nocd()) {
+            init_patches(check_version11());
             install_latehook();
         } else {
-            logger::writeline("flplusplus: Version not 1.1, not installing");
+            logger::writeline("flplusplus: Couldn't detect No-CD EXE, not installing");
+            return FALSE;
         }
-		break;
+        break;
+    }
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
 		break;
