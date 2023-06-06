@@ -1,0 +1,18 @@
+name: Build Release
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install mingw64-i686 g++
+      run: sudo apt install g++-mingw-w64-i686
+    - name: Compile
+      run: ./build_linux.sh
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: flplusplus.dll
+        path: out/flplusplus.dll
