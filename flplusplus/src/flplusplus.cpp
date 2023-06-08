@@ -11,12 +11,11 @@
 #include "adoxa/adoxa.h"
 
 #include <windows.h>
-#include <cstdlib>
 #include <shlwapi.h>
 #include <vector>
 
 
-unsigned char *thornLoadData;
+unsigned char thornLoadData[5];
 typedef void *(__cdecl *ScriptLoadPtr)(const char*);
 ScriptLoadPtr _ThornScriptLoad;
 
@@ -39,7 +38,7 @@ void init_config()
 {
     config::init_defaults();
     char path[MAX_PATH];
-    GetModuleFileNameA(NULL, path, MAX_PATH);
+    GetModuleFileNameA(nullptr, path, MAX_PATH);
     PathRemoveFileSpecA(path);
     PathAppendA(path, "flplusplus.ini");
     if(PathFileExistsA(path)) {
@@ -81,7 +80,6 @@ void install_latehook(void)
 {	
 	HMODULE common = GetModuleHandleA("common.dll");
 	_ThornScriptLoad = (ScriptLoadPtr)GetProcAddress(common, "?ThornScriptLoad@@YAPAUIScriptEngine@@PBD@Z");
-	thornLoadData = (unsigned char*)malloc(5);
 	patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
 }
 
@@ -106,9 +104,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
                      )
 {
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH: {
+    if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
         if (check_nocd()) {
             init_patches(check_version11());
             install_latehook();
@@ -116,14 +112,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             logger::writeline("flplusplus: Couldn't detect No-CD EXE, not installing");
             return FALSE;
         }
-        break;
     }
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-		break;
-    case DLL_PROCESS_DETACH:
-        break;
-    }
+
     return TRUE;
 }
 
