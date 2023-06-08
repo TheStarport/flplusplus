@@ -1,6 +1,5 @@
 #include "savegame.h"
 #include "config.h"
-#include "log.h"
 #include "patch.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -20,7 +19,7 @@ bool UserDataPath(char *outputBuffer)
     } else {
         SHGetFolderPathA(NULL, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, NULL, 0, path);
         PathAppendA(path, "My Games");
-        PathAppendA(path, config::get_config().savefoldername);
+        PathAppendA(path, config::get_config().savefoldername.c_str());
     }
     strcpy(outputBuffer, path);
     return true;
