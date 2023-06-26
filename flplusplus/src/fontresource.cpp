@@ -1,8 +1,7 @@
 #include "fontresource.h"
 #include "config.h"
+#include "log.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <Shlwapi.h>
 
 void fontresource::init(LPCSTR fontDirectory)
@@ -15,6 +14,14 @@ void fontresource::init(LPCSTR fontDirectory)
         strcpy_s(path, sizeof(path), fontDirectory);
         PathAppendA(path, fontFile.c_str());
 
-        AddFontResourceEx(path, FR_PRIVATE, nullptr);
+        if (!PathFileExists(path)) {
+            logger::writeformat("path to font %s does not exist (%s)", fontFile.c_str(), path);
+            continue;
+        }
+
+        if (AddFontResourceEx(path, FR_PRIVATE, nullptr))
+            logger::writeformat("successfully added font %s", fontFile.c_str());
+        else
+            logger::writeformat("error adding font %s", fontFile.c_str());
     }
 }
