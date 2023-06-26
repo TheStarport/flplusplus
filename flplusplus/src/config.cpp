@@ -1,10 +1,6 @@
 #include "config.h"
 
-#if defined(_MSC_VER)
 #include "Common.h"
-#else
-#include "INIReader.h"
-#endif
 
 config::ConfigData conf;
 
@@ -19,10 +15,10 @@ void config::init_defaults()
     conf.savefoldername = "Freelancer";
     conf.saveindirectory = false;
     conf.removestartlocationwarning = true;
+    conf.logtoconsole = false;
 }
 void config::init_from_file(const char *filename)
 {
-#if defined(_MSC_VER)
     INI_Reader reader{};
 
     if (!reader.open(filename, false))
@@ -46,24 +42,16 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("remove_start_location_warning"))
                 conf.removestartlocationwarning = reader.get_value_bool(0);
+                
+            if (reader.is_value("log_to_console"))
+                conf.logtoconsole = reader.get_value_bool(0);
         }
     }
 
     reader.close();
-#else
-    INIReader reader(filename);
-    if(reader.ParseError() != 0) {
-        return;
-    }
-    conf.lodscale = reader.GetInteger("flplusplus", "lod_scale", 0);
-    conf.savefoldername = reader.Get("flplusplus","save_folder_name", "Freelancer");
-    conf.saveindirectory = reader.GetBoolean("flplusplus", "save_in_directory", false);
-    conf.removestartlocationwarning = reader.GetBoolean("flplusplus", "remove_start_location_warning", true);
-#endif
 }
 
 void config::read_font_files(const char *filename) {
-#if defined(_MSC_VER)
     INI_Reader reader{};
 
     if (!reader.open(filename, false))
@@ -82,7 +70,4 @@ void config::read_font_files(const char *filename) {
     }
 
     reader.close();
-#else
-    // TODO: Implement for non-MSVC
-#endif
 }

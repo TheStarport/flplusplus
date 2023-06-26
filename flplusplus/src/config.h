@@ -14,6 +14,7 @@ namespace config {
         std::string savefoldername;
         bool saveindirectory;
         bool removestartlocationwarning;
+        bool logtoconsole;
         std::vector<std::string> fontfiles{};
     };
     ConfigData& get_config();

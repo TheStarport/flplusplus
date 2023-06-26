@@ -1,4 +1,5 @@
 #include "log.h"
+#include "config.h"
 #define WIN32_LEAN_AND_MEAN
 #define _CRT_SECURE_NO_WARNINGS
 #include <windows.h>
@@ -24,7 +25,7 @@ static void do_linking()
 void logger::writeline(const char *line)
 {
     do_linking();
-    (*FDUMP)(1048578, "%s\n", line);
+    (*FDUMP)(1048578, "%s", line);
 }
 
 static DWORD fdump_timestamped(DWORD unk, const char *fmt, ...)
@@ -40,6 +41,9 @@ static DWORD fdump_timestamped(DWORD unk, const char *fmt, ...)
 	std::time(&rawtime);
 	timeinfo = std::localtime(&rawtime);
 	std::strftime(timestamp, 80, "%Y-%m-%d %H:%M:%S", timeinfo);
+	if(config::get_config().logtoconsole) {
+	    printf("[%s] %s\n", timestamp, buffer);
+	}
     return fdump_original(unk, "[%s] %s", timestamp, buffer);
 }
 

@@ -17,6 +17,7 @@ add_library (flplusplus SHARED
     "src/adoxa/wheelscroll.cpp"
     "src/startlocation.cpp"
     "src/fontresource.cpp"
+    "src/Common.cpp"
 )
 
 if (MSVC)
@@ -40,6 +41,6 @@ endif()
 target_link_libraries(flplusplus shlwapi gdiplus shell32)
 target_include_directories(flplusplus PUBLIC "include")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_link_options(flplusplus PUBLIC -static-libgcc -static-libstdc++)
+    target_link_options(flplusplus PUBLIC -static-libgcc -static-libstdc++ -static)
 endif()
 set_target_properties(flplusplus PROPERTIES PREFIX "")

@@ -20,7 +20,7 @@ unsigned char thornLoadData[5];
 typedef void *(__cdecl *ScriptLoadPtr)(const char*);
 ScriptLoadPtr _ThornScriptLoad;
 
-char fontsPath[MAX_PATH];
+char dataPath[MAX_PATH];
 
 struct LateHookEntry {
     LateHookEntry(flplusplus_cblatehook func, void *data)
@@ -56,15 +56,15 @@ void init_config()
         config::init_from_file(configPath);
     }
 
-    // Get FONTS folder path
-    strcpy_s(fontsPath, sizeof(fontsPath), exePath);
-    PathRemoveFileSpecA(fontsPath);
-    PathAppendA(fontsPath, "DATA\\FONTS");
+    // Get DATA folder path
+    strcpy_s(dataPath, sizeof(dataPath), exePath);
+    PathRemoveFileSpecA(dataPath);
+    PathAppendA(dataPath, "DATA\\");
 
     // Get fonts.ini path
     char fontsIniPath[MAX_PATH];
-    strcpy_s(fontsIniPath, sizeof(fontsIniPath), fontsPath);
-    PathAppendA(fontsIniPath, "fonts.ini");
+    strcpy_s(fontsIniPath, sizeof(fontsIniPath), dataPath);
+    PathAppendA(fontsIniPath, "FONTS\\fonts.ini");
 
     if (PathFileExistsA(fontsIniPath)) {
         logger::writeformat("opening fonts.ini at %s", fontsIniPath);
@@ -75,14 +75,14 @@ void init_config()
 void init_patches(bool version11)
 {
     logger::patch_fdump();
-    logger::writeline("flplusplus: installing patches");
     init_config();
+    logger::writeline("flplusplus: installing patches");
     graphics::init(version11);
     screenshot::init();
     savegame::init();
     codec::init();
     startlocation::init();
-    fontresource::init(fontsPath);
+    fontresource::init(dataPath);
     adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }

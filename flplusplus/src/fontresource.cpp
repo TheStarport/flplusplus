@@ -2,7 +2,7 @@
 #include "config.h"
 #include "log.h"
 
-#include <Shlwapi.h>
+#include <shlwapi.h>
 
 void fontresource::init(LPCSTR fontDirectory)
 {
