@@ -6,6 +6,7 @@
 #include "screenshot.h"
 #include "savegame.h"
 #include "codec.h"
+#include "fontresource.h"
 #include "startlocation.h"
 #include "log.h"
 #include "adoxa/adoxa.h"
@@ -18,6 +19,8 @@
 unsigned char thornLoadData[5];
 typedef void *(__cdecl *ScriptLoadPtr)(const char*);
 ScriptLoadPtr _ThornScriptLoad;
+
+char fontsPath[MAX_PATH];
 
 struct LateHookEntry {
     LateHookEntry(flplusplus_cblatehook func, void *data)
@@ -37,13 +40,35 @@ FLPEXPORT void flplusplus_add_latehook(flplusplus_cblatehook hkfunc, void *userD
 void init_config()
 {
     config::init_defaults();
-    char path[MAX_PATH];
-    GetModuleFileNameA(nullptr, path, MAX_PATH);
-    PathRemoveFileSpecA(path);
-    PathAppendA(path, "flplusplus.ini");
-    if(PathFileExistsA(path)) {
-        logger::writeformat("opening flplusplus.ini at %s", path);
-        config::init_from_file(path);
+
+    // Get EXE folder path
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+    PathRemoveFileSpecA(exePath);
+
+    // Get flplusplus.ini path
+    char configPath[MAX_PATH];
+    strcpy_s(configPath, sizeof(configPath), exePath);
+    PathAppendA(configPath, "flplusplus.ini");
+
+    if(PathFileExistsA(configPath)) {
+        logger::writeformat("opening flplusplus.ini at %s", configPath);
+        config::init_from_file(configPath);
+    }
+
+    // Get FONTS folder path
+    strcpy_s(fontsPath, sizeof(fontsPath), exePath);
+    PathRemoveFileSpecA(fontsPath);
+    PathAppendA(fontsPath, "DATA\\FONTS");
+
+    // Get fonts.ini path
+    char fontsIniPath[MAX_PATH];
+    strcpy_s(fontsIniPath, sizeof(fontsIniPath), fontsPath);
+    PathAppendA(fontsIniPath, "fonts.ini");
+
+    if (PathFileExistsA(fontsIniPath)) {
+        logger::writeformat("opening fonts.ini at %s", fontsIniPath);
+        config::read_font_files(fontsIniPath);
     }
 }
 
@@ -57,6 +82,7 @@ void init_patches(bool version11)
     savegame::init();
     codec::init();
     startlocation::init();
+    fontresource::init(fontsPath);
     adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }
