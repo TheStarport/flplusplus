@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 namespace fontresource {
-    void init(const std::string &fontDirectory);
+    void init(LPCSTR fontDirectory);
 }
