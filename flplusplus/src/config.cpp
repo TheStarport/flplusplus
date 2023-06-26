@@ -61,3 +61,28 @@ void config::init_from_file(const char *filename)
     conf.removestartlocationwarning = reader.GetBoolean("flplusplus", "remove_start_location_warning", true);
 #endif
 }
+
+void config::read_font_files(const char *filename) {
+#if defined(_MSC_VER)
+    INI_Reader reader{};
+
+    if (!reader.open(filename, false))
+        return;
+
+    while (reader.read_header())
+    {
+        if (!reader.is_header("FontFiles"))
+            continue;
+
+        while (reader.read_value())
+        {
+            if (reader.is_value("path"))
+                conf.fontfiles.emplace_back(reader.get_value_string(0));
+        }
+    }
+
+    reader.close();
+#else
+    // TODO: Implement for non-MSVC
+#endif
+}

@@ -16,6 +16,7 @@ add_library (flplusplus SHARED
     "src/adoxa/adoxa.cpp"
     "src/adoxa/wheelscroll.cpp"
     "src/startlocation.cpp"
+    "src/fontresource.cpp"
 )
 
 if (MSVC)

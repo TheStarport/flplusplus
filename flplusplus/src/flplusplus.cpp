@@ -6,6 +6,7 @@
 #include "screenshot.h"
 #include "savegame.h"
 #include "codec.h"
+#include "fontresource.h"
 #include "startlocation.h"
 #include "log.h"
 #include "adoxa/adoxa.h"
@@ -45,6 +46,13 @@ void init_config()
         logger::writeformat("opening flplusplus.ini at %s", path);
         config::init_from_file(path);
     }
+
+    LPCSTR fontsPath = "../DATA/FONTS/fonts.ini";
+
+    if (PathFileExistsA(fontsPath)) {
+        logger::writeformat("opening fonts.ini at %s", fontsPath);
+        config::read_font_files(fontsPath);
+    }
 }
 
 void init_patches(bool version11)
@@ -57,6 +65,7 @@ void init_patches(bool version11)
     savegame::init();
     codec::init();
     startlocation::init();
+    fontresource::init("../DATA/FONTS");
     adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }
