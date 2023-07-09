@@ -10,7 +10,7 @@ namespace config {
     class ConfigData
     {
     public:
-        unsigned int lodscale;
+        float lodscale;
         std::string savefoldername;
         bool saveindirectory;
         bool removestartlocationwarning;

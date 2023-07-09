@@ -32,7 +32,7 @@ void config::init_from_file(const char *filename)
         while (reader.read_value())
         {
             if (reader.is_value("lod_scale"))
-                conf.lodscale = reader.get_value_int(0);
+                conf.lodscale = reader.get_value_float(0);
 
             if (reader.is_value("save_folder_name"))
                 conf.savefoldername = std::string(reader.get_value_string(0));
