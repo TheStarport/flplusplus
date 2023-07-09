@@ -15,15 +15,15 @@ public:
     INI_Reader();
     ~INI_Reader();
 
-    bool open(LPCSTR, bool);
-    bool read_header(void);
-    bool is_header(LPCSTR);
-    bool read_value(void);
-    bool is_value(LPCSTR);
-    bool get_value_bool(UINT);
-    int get_value_int(UINT);
-    LPCSTR get_value_string(UINT);
-    void close(void);
+    bool open(LPCSTR path, bool throwExceptionOnFail);
+    bool read_header();
+    bool is_header(LPCSTR header);
+    bool read_value();
+    bool is_value(LPCSTR value);
+    bool get_value_bool(UINT index);
+    int get_value_int(UINT index);
+    LPCSTR get_value_string(UINT index);
+    void close();
 
 private:
     BYTE data[0x1568];

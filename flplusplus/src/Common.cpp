@@ -67,12 +67,12 @@ INI_Reader::INI_Reader()
     IniCreate(SELF, 0);
 }
 
-bool INI_Reader::open(LPCSTR filename, bool a)
+bool INI_Reader::open(LPCSTR path, bool throwExceptionOnFail)
 {
-    return IniOpen(SELF, 0, filename, a);
+    return IniOpen(SELF, 0, path, throwExceptionOnFail);
 }
 
-bool INI_Reader::read_header(void)
+bool INI_Reader::read_header()
 {
     return IniReadHeader(SELF, 0);    
 }
@@ -82,7 +82,7 @@ bool INI_Reader::is_header(LPCSTR header)
     return IniIsHeader(SELF, 0, header);
 }
 
-bool INI_Reader::read_value(void)
+bool INI_Reader::read_value()
 {
     return IniReadValue(SELF, 0);    
 }
@@ -107,7 +107,7 @@ LPCSTR INI_Reader::get_value_string(UINT index)
     return IniGetValueString(SELF, 0, index);
 }
 
-void INI_Reader::close(void)
+void INI_Reader::close()
 {
     IniClose(SELF, 0);
 }
