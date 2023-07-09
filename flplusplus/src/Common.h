@@ -22,6 +22,7 @@ public:
     bool is_value(LPCSTR value);
     bool get_value_bool(UINT index);
     int get_value_int(UINT index);
+    float get_value_float(UINT index);
     LPCSTR get_value_string(UINT index);
     void close();
 
