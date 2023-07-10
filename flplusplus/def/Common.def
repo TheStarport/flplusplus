@@ -8,5 +8,6 @@ EXPORTS
 ?is_value@INI_Reader@@QAE_NPBD@Z
 ?get_value_bool@INI_Reader@@QAE_NI@Z
 ?get_value_int@INI_Reader@@QAEHI@Z
+?get_value_float@INI_Reader@@QAEMI@Z
 ?get_value_string@INI_Reader@@QAEPBDI@Z
 ?close@INI_Reader@@QAEXXZ
