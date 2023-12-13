@@ -11,7 +11,9 @@ config::ConfigData& config::get_config()
 
 void config::init_defaults()
 {
-    conf.lodscale = 0;
+    conf.lodscale = 1;
+    conf.pbubblescale = 1;
+    conf.characterdetailscale = 1;
     conf.savefoldername = "Freelancer";
     conf.saveindirectory = false;
     conf.removestartlocationwarning = true;
@@ -34,6 +36,12 @@ void config::init_from_file(const char *filename)
             if (reader.is_value("lod_scale"))
                 conf.lodscale = reader.get_value_float(0);
 
+            if (reader.is_value("pbubble_scale"))
+                conf.pbubblescale = reader.get_value_float(0);
+
+            if (reader.is_value("character_detail_scale"))
+                conf.characterdetailscale = reader.get_value_float(0);
+
             if (reader.is_value("save_folder_name"))
                 conf.savefoldername = std::string(reader.get_value_string(0));
 
@@ -42,7 +50,7 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("remove_start_location_warning"))
                 conf.removestartlocationwarning = reader.get_value_bool(0);
-                
+
             if (reader.is_value("log_to_console"))
                 conf.logtoconsole = reader.get_value_bool(0);
         }
