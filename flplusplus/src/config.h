@@ -11,6 +11,8 @@ namespace config {
     {
     public:
         float lodscale;
+        float pbubblescale;
+        float characterdetailscale;
         std::string savefoldername;
         bool saveindirectory;
         bool removestartlocationwarning;

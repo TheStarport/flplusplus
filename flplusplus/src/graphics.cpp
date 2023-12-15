@@ -2,13 +2,19 @@
 #include "patch.h"
 #include "offsets.h"
 #include "config.h"
+#include "Common.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+config::ConfigData& cfg = config::get_config();
+
+const float minScale = 1;
+const float maxScale = 1000000;
+
 int patch_lodranges(const float* scale)
 {
-    if(*scale < 1 || *scale > 1000000) return 0;
+    if(*scale < minScale || *scale > maxScale) return 0;
 
     if(*scale == 1) {
         //1x lods
@@ -41,6 +47,46 @@ int patch_lodranges(const float* scale)
     return 1;
 }
 
+float __fastcall multiply_pbubble_float(void* reader_ptr, PVOID _edx, UINT index)
+{
+    INI_Reader *reader = CAST_INI_READER(reader_ptr);
+    return reader->get_value_float(index) * cfg.pbubblescale;
+}
+
+float __fastcall multiply_characterdetail_float(void* reader_ptr, PVOID _edx, UINT index)
+{
+    INI_Reader *reader = CAST_INI_READER(reader_ptr);
+    return reader->get_value_float(index) * cfg.characterdetailscale;
+}
+
+bool patch_pbubble()
+{
+    if (cfg.pbubblescale < minScale || cfg.pbubblescale > maxScale)
+        return false;
+
+    static UINT multiplyPbubblePtr = (UINT) &multiply_pbubble_float;
+
+    patch::patch_uint32(OF_PBUBBLE_GET_VALUE0, (UINT) &multiplyPbubblePtr);
+    patch::patch_uint32(OF_PBUBBLE_GET_VALUE1, (UINT) &multiplyPbubblePtr);
+
+    return true;
+}
+
+bool patch_characterdetail()
+{
+    if (cfg.characterdetailscale < minScale || cfg.characterdetailscale > maxScale)
+        return false;
+
+    auto common = (DWORD) GetModuleHandleA("common.dll");
+
+    UINT multiplyCharacterDetailPtr = (UINT) &multiply_characterdetail_float;
+    UINT detailSwitchAddr = common + F_OF_BODYPART_DETAILSWITCH_GET_VALUE;
+
+    patch::patch_uint32(detailSwitchAddr, multiplyCharacterDetailPtr - detailSwitchAddr - 4);
+
+    return true;
+}
+
 void graphics::init(bool version11)
 {
     patch::patch_uint8(OF_VIDEODIALOG, 0x33); //disable unsupported video dialog
@@ -49,9 +95,12 @@ void graphics::init(bool version11)
     //FL tries to load this font over Agency FB, screws up UI if it finds it
     //if you have a font named '\b' you have big problems
     const char *garbageFont = "\b\0";
-    HMODULE common = GetModuleHandleA("common.dll");
-    unsigned int address = (DWORD) common + (version11 ? F_OF_VIBROCENTRICFONT_V11 : F_OF_VIBROCENTRICFONT_V10);
+    auto common = (DWORD) GetModuleHandleA("common.dll");
+    unsigned int address = common + (version11 ? F_OF_VIBROCENTRICFONT_V11 : F_OF_VIBROCENTRICFONT_V10);
     patch::patch_bytes(address, (void*)garbageFont, 2);
     //lod 0
-    patch_lodranges(&config::get_config().lodscale);
+    patch_lodranges(&cfg.lodscale);
+
+    patch_pbubble();
+    patch_characterdetail();
 }
