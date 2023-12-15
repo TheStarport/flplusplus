@@ -59,15 +59,23 @@ static void LoadFunctions()
 
 INI_Reader::~INI_Reader()
 {
-    IniDestroy(SELF, 0);
-    free(SELF);
+    if(this->data[255]) {
+        IniDestroy(SELF, 0);
+        free(SELF);
+    }
 }
 
-INI_Reader::INI_Reader()
+INI_Reader::INI_Reader(void* external)
 {
     LoadFunctions();
-    SELF = (void*)malloc(0x1580);
-    IniCreate(SELF, 0);
+    if(!external) {
+        SELF = (void*)malloc(0x1580);
+        IniCreate(SELF, 0);
+        this->data[255] = 1;
+    } else {
+        SELF = external;
+        this->data[255] = 0;
+    }
 }
 
 bool INI_Reader::open(LPCSTR path, bool throwExceptionOnFail)
@@ -118,5 +126,12 @@ LPCSTR INI_Reader::get_value_string(UINT index)
 void INI_Reader::close()
 {
     IniClose(SELF, 0);
+}
+
+
+INI_Reader *WrapIniReader(void* external)
+{
+    LoadFunctions();
+    return new INI_Reader(external);
 }
 #endif
