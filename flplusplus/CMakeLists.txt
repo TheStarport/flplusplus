@@ -18,6 +18,8 @@ add_library (flplusplus SHARED
     "src/startlocation.cpp"
     "src/fontresource.cpp"
     "src/Common.cpp"
+    "src/thnplayer.cpp"
+    "src/consolewindow.cpp"
 )
 
 if (MSVC)
@@ -38,7 +40,7 @@ if (MSVC)
     target_link_libraries(flplusplus ${COMMON_LIB_LOCATION})
 endif()
 
-target_link_libraries(flplusplus shlwapi gdiplus shell32)
+target_link_libraries(flplusplus shlwapi gdiplus shell32 dbghelp)
 target_include_directories(flplusplus PUBLIC "include")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(flplusplus PUBLIC -static-libgcc -static-libstdc++ -static)

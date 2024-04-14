@@ -10,15 +10,15 @@
 #include "startlocation.h"
 #include "log.h"
 #include "adoxa/adoxa.h"
-
+#include "thnplayer.h"
 #include <windows.h>
 #include <shlwapi.h>
 #include <vector>
+#include "consolewindow.h"
 
-
-unsigned char thornLoadData[5];
+static unsigned char thornLoadData[5];
 typedef void *(__cdecl *ScriptLoadPtr)(const char*);
-ScriptLoadPtr _ThornScriptLoad;
+static ScriptLoadPtr _ThornScriptLoad;
 
 char dataPath[MAX_PATH];
 
@@ -76,6 +76,8 @@ void init_patches(bool version11)
 {
     logger::patch_fdump();
     init_config();
+    if(config::get_config().logtoconsole)
+        RedirectIOToConsole();
     logger::writeline("flplusplus: installing patches");
     graphics::init(version11);
     screenshot::init();
@@ -83,6 +85,7 @@ void init_patches(bool version11)
     codec::init();
     startlocation::init();
     fontresource::init(dataPath);
+    thnplayer::init();
     adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }
@@ -104,9 +107,9 @@ void * __cdecl script_load_hook(const char *script)
 
 void install_latehook(void)
 {	
-	HMODULE common = GetModuleHandleA("common.dll");
-	_ThornScriptLoad = (ScriptLoadPtr)GetProcAddress(common, "?ThornScriptLoad@@YAPAUIScriptEngine@@PBD@Z");
-	patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
+	//HMODULE common = GetModuleHandleA("common.dll");
+	//_ThornScriptLoad = (ScriptLoadPtr)GetProcAddress(common, "?ThornScriptLoad@@YAPAUIScriptEngine@@PBD@Z");
+	//patch::detour((unsigned char*)_ThornScriptLoad, (void*)script_load_hook, thornLoadData);
 }
 
 bool check_version11(void)
