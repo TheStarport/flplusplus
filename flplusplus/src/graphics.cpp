@@ -47,15 +47,15 @@ int patch_lodranges(const float* scale)
     return 1;
 }
 
-float __fastcall multiply_pbubble_float(void* reader_ptr, PVOID _edx, UINT index)
+float __fastcall multiply_pbubble_float(INI_Reader* reader_ptr, PVOID _edx, UINT index)
 {
-    INI_Reader *reader = CAST_INI_READER(reader_ptr);
+    INI_Reader *reader = reader_ptr;
     return reader->get_value_float(index) * cfg.pbubblescale;
 }
 
-float __fastcall multiply_characterdetail_float(void* reader_ptr, PVOID _edx, UINT index)
+float __fastcall multiply_characterdetail_float(INI_Reader* reader_ptr, PVOID _edx, UINT index)
 {
-    INI_Reader *reader = CAST_INI_READER(reader_ptr);
+    INI_Reader *reader = reader_ptr;
     return reader->get_value_float(index) * cfg.characterdetailscale;
 }
 
