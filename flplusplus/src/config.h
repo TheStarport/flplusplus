@@ -17,6 +17,8 @@ namespace config {
         bool saveindirectory;
         bool removestartlocationwarning;
         bool logtoconsole;
+        float shippreviewscrollingspeed;
+        bool shippreviewscrollinginverse;
         std::vector<std::string> fontfiles{};
     };
     ConfigData& get_config();

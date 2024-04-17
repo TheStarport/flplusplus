@@ -18,6 +18,8 @@ void config::init_defaults()
     conf.saveindirectory = false;
     conf.removestartlocationwarning = true;
     conf.logtoconsole = false;
+    conf.shippreviewscrollingspeed = 2;
+    conf.shippreviewscrollinginverse = false;
 }
 void config::init_from_file(const char *filename)
 {
@@ -53,6 +55,12 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("log_to_console"))
                 conf.logtoconsole = reader.get_value_bool(0);
+
+            if (reader.is_value("ship_preview_scrolling_speed"))
+                conf.shippreviewscrollingspeed = reader.get_value_float(0);
+
+            if (reader.is_value("ship_preview_scrolling_inverse"))
+                conf.shippreviewscrollinginverse = reader.get_value_bool(0);
         }
     }
 
