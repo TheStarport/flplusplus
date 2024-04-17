@@ -20,6 +20,7 @@ add_library (flplusplus SHARED
     "src/thnplayer.cpp"
     "src/consolewindow.cpp"
     "src/Common.cpp"
+    "src/shippreviewscroll.cpp"
 )
 
 target_link_libraries(flplusplus shlwapi gdiplus shell32 dbghelp)
