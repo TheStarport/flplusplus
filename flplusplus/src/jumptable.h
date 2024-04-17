@@ -21,7 +21,7 @@ __asm__(".att_syntax"); \
 FUNC_INITIALIZER( table ## _Load) \
 { \
   HMODULE library = LoadLibraryA(dll); \
-  for(int i = 0; i < (sizeof(table) / sizeof(const char*)); i++) \
+  for(int i = 0; i < (sizeof(table) / sizeof(const char*)); i+=2) \
   { \
     table[i + 1] = (const char*)GetProcAddress(library, table[i]); \
   } \
