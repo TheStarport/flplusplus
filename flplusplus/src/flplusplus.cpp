@@ -5,11 +5,9 @@
 #include "config.h"
 #include "screenshot.h"
 #include "savegame.h"
-#include "codec.h"
 #include "fontresource.h"
 #include "startlocation.h"
 #include "log.h"
-#include "adoxa/adoxa.h"
 #include "thnplayer.h"
 #include <windows.h>
 #include <shlwapi.h>
@@ -83,12 +81,10 @@ void init_patches(bool version11)
     graphics::init(version11);
     screenshot::init();
     savegame::init();
-    codec::init();
     startlocation::init();
     fontresource::init(dataPath);
     thnplayer::init();
     shippreviewscroll::init();
-    adoxa::patch();
     logger::writeline("flplusplus: all patched");
 }
 
