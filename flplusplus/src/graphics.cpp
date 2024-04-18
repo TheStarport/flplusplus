@@ -25,13 +25,11 @@ int patch_lodranges(const float* scale)
         patch::patch_x3(OF_LODS_P4, 0x90, 0x90, 0x90);
         //original draw distances
         patch::patch_float(OF_REN_DIST0, 10000.0);
-        patch::patch_float(OF_REN_DIST1, 20000.0);
         return 1;
     }
     //distances
     float ren_dist0 = 10000.0;
-    float ren_dist1 = 20000.0; //This one doesn't seem to change for now
-    //lod scale
+
     unsigned char patch1[5] = { 0xE8, 0x7B, 0xFF, 0xFF, 0xFF };
     patch::patch_bytes(OF_LODS_P1, (void*)patch1, 5);
     patch::patch_uint16(OF_LODS_P2, 0x0DD8);
@@ -43,7 +41,6 @@ int patch_lodranges(const float* scale)
     ren_dist0 *= *scale;
 
     patch::patch_float(OF_REN_DIST0, ren_dist0);
-    patch::patch_float(OF_REN_DIST1, ren_dist1);
     return 1;
 }
 
@@ -68,6 +65,15 @@ bool patch_pbubble()
 
     patch::patch_uint32(OF_PBUBBLE_GET_VALUE0, (UINT) &multiplyPbubblePtr);
     patch::patch_uint32(OF_PBUBBLE_GET_VALUE1, (UINT) &multiplyPbubblePtr);
+
+    float ren_dist1 = 20000.0f;
+
+    ren_dist1 *= cfg.pbubblescale;
+
+    if (ren_dist1 > 40000.0f)
+        ren_dist1 = 40000.0f;
+
+    patch::patch_float(OF_REN_DIST1, ren_dist1);
 
     return true;
 }
