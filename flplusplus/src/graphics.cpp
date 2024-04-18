@@ -9,12 +9,12 @@
 
 config::ConfigData& cfg = config::get_config();
 
-const float minScale = 1;
-const float maxScale = 1000000;
+#define MIN_DETAIL_SCALE 1.0f
+#define MAX_DETAIL_SCALE 1000000.0f
 
 int patch_lodranges(const float* scale)
 {
-    if(*scale < minScale || *scale > maxScale) return 0;
+    if(*scale < MIN_DETAIL_SCALE || *scale > MAX_DETAIL_SCALE) return 0;
 
     if(*scale == 1) {
         //1x lods
@@ -61,7 +61,7 @@ float __fastcall multiply_characterdetail_float(INI_Reader* reader_ptr, PVOID _e
 
 bool patch_pbubble()
 {
-    if (cfg.pbubblescale < minScale || cfg.pbubblescale > maxScale)
+    if (cfg.pbubblescale < MIN_DETAIL_SCALE || cfg.pbubblescale > MAX_DETAIL_SCALE)
         return false;
 
     static UINT multiplyPbubblePtr = (UINT) &multiply_pbubble_float;
@@ -74,7 +74,7 @@ bool patch_pbubble()
 
 bool patch_characterdetail()
 {
-    if (cfg.characterdetailscale < minScale || cfg.characterdetailscale > maxScale)
+    if (cfg.characterdetailscale < MIN_DETAIL_SCALE || cfg.characterdetailscale > MAX_DETAIL_SCALE)
         return false;
 
     auto common = (DWORD) GetModuleHandleA("common.dll");
