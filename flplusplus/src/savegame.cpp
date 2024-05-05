@@ -12,40 +12,67 @@
 #include <io.h>
 #include <direct.h>
 
-void HandleUserDataPathFail(char * const outputBuffer)
+void HandleUserDataPathFail(char * const outputBuffer, char * failedSavesDirectory)
 {
+    logger::writeformat("flplusplus: failed to access the saves directory for reading and writing (%s). Freelancer may not be able to properly load and store save files.", failedSavesDirectory);
     *outputBuffer = '\0';
-    logger::writeline("flplusplus: failed to access the saves directory. Freelancer may not be able to properly store save files.");
+}
+
+void GetInDirectoryPath(char * path)
+{
+    GetModuleFileNameA(NULL, path, MAX_PATH);
+    PathRemoveFileSpecA(path);
+    PathAppendA(path, "..\\SAVE");
+}
+
+bool TryGetMyGamesPath(char * path)
+{
+    if (SHGetFolderPathA(NULL, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, NULL, 0, path) != S_OK) {
+        return false;
+    }
+
+    PathAppendA(path, "My Games");
+
+    if (_access(path, 6) != 0) {
+        if (_mkdir(path) != 0) {
+            return false;
+        }
+    }
+
+    PathAppendA(path, config::get_config().savefoldername.c_str());
+
+    if (_access(path, 6) != 0) {
+        if (_mkdir(path) != 0) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool UserDataPath(char * const outputBuffer)
 {
     char path[MAX_PATH];
+
     if(config::get_config().saveindirectory) {
-        GetModuleFileNameA(NULL, path, MAX_PATH);
-        PathRemoveFileSpecA(path);
-        PathAppendA(path, "..\\SAVE");
+        GetInDirectoryPath(path);
     } else {
-        if (SHGetFolderPathA(NULL, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, NULL, 0, path) != S_OK) {
-            HandleUserDataPathFail(outputBuffer);
-            return false;
+        if (!TryGetMyGamesPath(path)) {
+            HandleUserDataPathFail(outputBuffer, path);
+
+            logger::writeline("flplusplus: saveindirectory option not set but trying to access the root SAVE directory regardless (fallback).");
+
+            // Fallback
+            GetInDirectoryPath(path);
+        } else {
+            strcpy(outputBuffer, path);
+            return true;
         }
-
-        PathAppendA(path, "My Games");
-
-        if (_access(path, 0) != 0) {
-            if (_mkdir(path) != 0) {
-                HandleUserDataPathFail(outputBuffer);
-                return false;
-            }
-        }
-
-        PathAppendA(path, config::get_config().savefoldername.c_str());
     }
 
-    if (_access(path, 0) != 0) {
+    if (_access(path, 6) != 0) {
         if (_mkdir(path) != 0) {
-            HandleUserDataPathFail(outputBuffer);
+            HandleUserDataPathFail(outputBuffer, path);
             return false;
         }
     }
