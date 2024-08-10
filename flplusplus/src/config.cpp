@@ -16,6 +16,8 @@ void config::init_defaults()
     conf.characterdetailscale = 1;
     conf.savefoldername = "Freelancer";
     conf.saveindirectory = false;
+    conf.screenshotsfoldername = "FreelancerShots";
+    conf.screenshotsindirectory = false;
     conf.removestartlocationwarning = true;
     conf.logtoconsole = false;
     conf.shippreviewscrollingspeed = 2;
@@ -49,6 +51,12 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("save_in_directory"))
                 conf.saveindirectory = reader.get_value_bool(0);
+
+            if (reader.is_value("screenshots_folder_name"))
+                conf.screenshotsfoldername = std::string(reader.get_value_string(0));
+
+            if (reader.is_value("screenshots_in_directory"))
+                conf.screenshotsindirectory = reader.get_value_bool(0);
 
             if (reader.is_value("remove_start_location_warning"))
                 conf.removestartlocationwarning = reader.get_value_bool(0);
