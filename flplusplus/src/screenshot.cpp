@@ -19,36 +19,65 @@
 
 using namespace Gdiplus;
 
-void HandleScreenShotPathFail(char * const outputBuffer)
+void HandleScreenShotPathFail(char * const outputBuffer, char * failedScreenshotsDirectory)
 {
+    logger::writeformat(
+            "flplusplus: failed to access the screenshots directory for reading and writing (%s). Freelancer may not be able to properly store screenshots.",
+            failedScreenshotsDirectory);
     *outputBuffer = '\0';
-    logger::writeline("flplusplus: failed to access the screenshots directory. Freelancer may not be able to properly store screenshots.");
+}
+
+void GetScInDirectoryPath(char * path)
+{
+    GetModuleFileNameA(NULL, path, MAX_PATH);
+    PathRemoveFileSpecA(path);
+    PathAppendA(path, "..\\SCREENSHOTS");
+}
+
+bool TryGetScreenshotsPath(char * path)
+{
+    if (SHGetFolderPathA(NULL, CSIDL_MYPICTURES | CSIDL_FLAG_CREATE, NULL, 0, path) != S_OK) {
+        return false;
+    }
+
+    PathAppendA(path, config::get_config().screenshotsfoldername.c_str());
+
+    if (_access(path, 6) != 0) {
+        if (_mkdir(path) != 0) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool ScreenShotPath(char * const outputBuffer)
 {
     char path[MAX_PATH];
+
     if (config::get_config().screenshotsindirectory) {
-        GetModuleFileNameA(NULL, path, MAX_PATH);
-        PathRemoveFileSpecA(path);
-        PathAppendA(path, "..\\SCREENSHOTS");
+        GetScInDirectoryPath(path);
     } else {
-        if (SHGetFolderPathA(NULL, CSIDL_MYPICTURES | CSIDL_FLAG_CREATE, NULL, 0, path) != S_OK) {
-            HandleScreenShotPathFail(outputBuffer);
-            return false;
-        }
+        if (!TryGetScreenshotsPath(path)) {
+            HandleScreenShotPathFail(outputBuffer, path);
+            logger::writeline("flplusplus: screenshotsindirectory option not set but trying to access the root SCREENSHOTS directory regardless (fallback).");
 
-        PathAppendA(path, config::get_config().screenshotsfoldername.c_str());
+            // Fallback
+            GetScInDirectoryPath(path);
+        } else {
+            strncpy(outputBuffer, path, MAX_PATH);
+            return true;
+        }
     }
 
-    if (_access(path, 0) != 0) {
+    if (_access(path, 6) != 0) {
         if (_mkdir(path) != 0) {
-            HandleScreenShotPathFail(outputBuffer);
+            HandleScreenShotPathFail(outputBuffer, path);
             return false;
         }
     }
 
-    strcpy(outputBuffer, path);
+    strncpy(outputBuffer, path, MAX_PATH);
     return true;
 }
 

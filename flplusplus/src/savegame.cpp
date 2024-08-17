@@ -18,7 +18,7 @@ void HandleUserDataPathFail(char * const outputBuffer, char * failedSavesDirecto
     *outputBuffer = '\0';
 }
 
-void GetInDirectoryPath(char * path)
+void GetSavesInDirectoryPath(char * path)
 {
     GetModuleFileNameA(NULL, path, MAX_PATH);
     PathRemoveFileSpecA(path);
@@ -55,7 +55,7 @@ bool UserDataPath(char * const outputBuffer)
     char path[MAX_PATH];
 
     if(config::get_config().saveindirectory) {
-        GetInDirectoryPath(path);
+        GetSavesInDirectoryPath(path);
     } else {
         if (!TryGetMyGamesPath(path)) {
             HandleUserDataPathFail(outputBuffer, path);
@@ -63,9 +63,9 @@ bool UserDataPath(char * const outputBuffer)
             logger::writeline("flplusplus: saveindirectory option not set but trying to access the root SAVE directory regardless (fallback).");
 
             // Fallback
-            GetInDirectoryPath(path);
+            GetSavesInDirectoryPath(path);
         } else {
-            strcpy(outputBuffer, path);
+            strncpy(outputBuffer, path, MAX_PATH);
             return true;
         }
     }
@@ -77,7 +77,7 @@ bool UserDataPath(char * const outputBuffer)
         }
     }
 
-    strcpy(outputBuffer, path);
+    strncpy(outputBuffer, path, MAX_PATH);
     return true;
 }
 
