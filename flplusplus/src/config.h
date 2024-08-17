@@ -15,6 +15,8 @@ namespace config {
         float characterdetailscale;
         std::string savefoldername;
         bool saveindirectory;
+        std::string screenshotsfoldername;
+        bool screenshotsindirectory;
         bool removestartlocationwarning;
         bool logtoconsole;
         float shippreviewscrollingspeed;

@@ -3,19 +3,54 @@
 #include "screenshot.h"
 #include "patch.h"
 #include "offsets.h"
+#include "config.h"
+#include "log.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <ctime>
 #include <string>
 #include <shlwapi.h>
+#include <shlobj.h>
 #include <gdiplus.h>
 #include <wchar.h>
+#include <io.h>
+#include <direct.h>
 
 using namespace Gdiplus;
 
-typedef bool (*screenshot_path_t)(char * const);
-screenshot_path_t GetScreenShotPath;
+void HandleScreenShotPathFail(char * const outputBuffer)
+{
+    *outputBuffer = '\0';
+    logger::writeline("flplusplus: failed to access the screenshots directory. Freelancer may not be able to properly store screenshots.");
+}
+
+bool ScreenShotPath(char * const outputBuffer)
+{
+    char path[MAX_PATH];
+    if (config::get_config().screenshotsindirectory) {
+        GetModuleFileNameA(NULL, path, MAX_PATH);
+        PathRemoveFileSpecA(path);
+        PathAppendA(path, "..\\SCREENSHOTS");
+    } else {
+        if (SHGetFolderPathA(NULL, CSIDL_MYPICTURES | CSIDL_FLAG_CREATE, NULL, 0, path) != S_OK) {
+            HandleScreenShotPathFail(outputBuffer);
+            return false;
+        }
+
+        PathAppendA(path, config::get_config().screenshotsfoldername.c_str());
+    }
+
+    if (_access(path, 0) != 0) {
+        if (_mkdir(path) != 0) {
+            HandleScreenShotPathFail(outputBuffer);
+            return false;
+        }
+    }
+
+    strcpy(outputBuffer, path);
+    return true;
+}
 
 std::wstring stows(std::string str)
 {
@@ -55,7 +90,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 static DWORD OnScreenshot()
 {
     char directory[MAX_PATH];
-    if(!GetScreenShotPath(directory))
+    if(!ScreenShotPath(directory))
     {
         return DWORD(-1);
     }
@@ -120,7 +155,8 @@ static DWORD OnScreenshot()
 void screenshot::init()
 {
     HMODULE common = GetModuleHandleA("common.dll");
-    GetScreenShotPath = (screenshot_path_t)GetProcAddress(common, "?GetScreenShotPath@@YA_NQAD@Z");
+    auto* getScreenShotPath = (unsigned char*)GetProcAddress(common, "?GetScreenShotPath@@YA_NQAD@Z");
     unsigned char buffer[5];
     patch::detour((unsigned char*)OF_PRINTSCREEN, (void*)OnScreenshot, buffer);
+    patch::detour(getScreenShotPath, (void*)ScreenShotPath, buffer);
 }
