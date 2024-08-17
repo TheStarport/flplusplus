@@ -123,14 +123,22 @@ static DWORD OnScreenshot()
     {
         return DWORD(-1);
     }
-    // get the device context of the screen
-	HDC hScreenDC = GetDC(nullptr);
-	
+
+    HWND flHWND = *(HWND*) OF_FREELANCER_HWND;
+
+    // get the device context of FL's window
+	HDC hScreenDC = GetDC(flHWND);
+
 	// and a device context to put it in
 	HDC hMemoryDC = CreateCompatibleDC(hScreenDC);
 
-	int width = GetDeviceCaps(hScreenDC, HORZRES);
-	int height = GetDeviceCaps(hScreenDC, VERTRES);
+    RECT gameWindow;
+    GetClientRect(flHWND, &gameWindow);
+    ClientToScreen(flHWND, (LPPOINT) &gameWindow.left);
+    ClientToScreen(flHWND, (LPPOINT) &gameWindow.right);
+
+    int width = gameWindow.right - gameWindow.left;
+    int height = gameWindow.bottom - gameWindow.top;
 
 	// maybe worth checking these are positive values
 	HBITMAP hBitmap = CreateCompatibleBitmap(hScreenDC, width, height);
@@ -140,7 +148,7 @@ static DWORD OnScreenshot()
 
 	BitBlt(hMemoryDC, 0, 0, width, height, hScreenDC, 0, 0, SRCCOPY);
 	hBitmap = (HBITMAP)SelectObject(hMemoryDC, hOldBitmap);
-    
+
     std::time_t rawtime;
 	std::tm* timeinfo;
 	char buffer[100];
@@ -150,7 +158,7 @@ static DWORD OnScreenshot()
 
 	std::strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
 	std::puts(buffer);
-    
+
     std::string outfile = std::string(directory) + "/" + std::string(buffer);
     std::string suffix = std::string("");
     int i = 0;
@@ -159,7 +167,7 @@ static DWORD OnScreenshot()
         suffix = std::string("_") + std::to_string(i);
     }
     outfile = outfile + suffix + std::string(".png");
-    
+
     GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
@@ -175,8 +183,8 @@ static DWORD OnScreenshot()
 
 	// clean up
 	DeleteDC(hMemoryDC);
-	DeleteDC(hScreenDC);
-	
+	ReleaseDC(flHWND, hScreenDC);
+
 	return DWORD(-1);
 }
 
