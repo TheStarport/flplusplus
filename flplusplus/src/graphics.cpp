@@ -12,48 +12,39 @@ config::ConfigData& cfg = config::get_config();
 #define MIN_DETAIL_SCALE 1.0f
 #define MAX_DETAIL_SCALE 1000000.0f
 
-int patch_lodranges(const float* scale)
+float __fastcall multiply_lodranges_float(INI_Reader* reader, PVOID _edx, UINT index)
 {
-    if(*scale < MIN_DETAIL_SCALE || *scale > MAX_DETAIL_SCALE) return 0;
-
-    if(*scale == 1) {
-        //1x lods
-        unsigned char og1[5] = { 0x83, 0xFE, 0x08, 0x7D, 0x16 };
-        patch::patch_bytes(OF_LODS_P1, (void*)og1, 5);
-        patch::patch_uint16(OF_LODS_P2, 0x9090);
-        patch::patch_uint16(OF_LODS_P3, 0x9090);
-        patch::patch_x3(OF_LODS_P4, 0x90, 0x90, 0x90);
-        //original draw distances
-        patch::patch_float(OF_REN_DIST0, 10000.0);
-        return 1;
-    }
-    //distances
-    float ren_dist0 = 10000.0;
-
-    unsigned char patch1[5] = { 0xE8, 0x7B, 0xFF, 0xFF, 0xFF };
-    patch::patch_bytes(OF_LODS_P1, (void*)patch1, 5);
-    patch::patch_uint16(OF_LODS_P2, 0x0DD8);
-    patch::patch_uint8(OF_LODS_P3 + 1, 0xC3);
-
-    // Write the pointer to the scale factor for the fmul st(0) instruction
-    patch::patch_uint32(OF_LODS_P4, (UINT) scale);
-
-    ren_dist0 *= *scale;
-
-    patch::patch_float(OF_REN_DIST0, ren_dist0);
-    return 1;
+    return reader->get_value_float(index) * cfg.lodscale;
 }
 
-float __fastcall multiply_pbubble_float(INI_Reader* reader_ptr, PVOID _edx, UINT index)
+float __fastcall multiply_pbubble_float(INI_Reader* reader, PVOID _edx, UINT index)
 {
-    INI_Reader *reader = reader_ptr;
     return reader->get_value_float(index) * cfg.pbubblescale;
 }
 
-float __fastcall multiply_characterdetail_float(INI_Reader* reader_ptr, PVOID _edx, UINT index)
+float __fastcall multiply_characterdetail_float(INI_Reader* reader, PVOID _edx, UINT index)
 {
-    INI_Reader *reader = reader_ptr;
     return reader->get_value_float(index) * cfg.characterdetailscale;
+}
+
+bool patch_lodranges()
+{
+    if(cfg.lodscale < MIN_DETAIL_SCALE || cfg.lodscale > MAX_DETAIL_SCALE)
+        return false;
+
+    if(cfg.lodscale == 1) {
+        //original draw distances
+        patch::patch_float(OF_REN_DIST0, 10000.0);
+        return true;
+    }
+
+    //distances
+    patch::patch_float(OF_REN_DIST0, 10000.0f * cfg.lodscale);
+
+    static UINT multiplyLodsPtr = (UINT) &multiply_lodranges_float;
+    patch::patch_uint32(OF_LODS_GET_VALUE, (UINT) &multiplyLodsPtr);
+
+    return true;
 }
 
 bool patch_pbubble()
@@ -66,10 +57,9 @@ bool patch_pbubble()
     patch::patch_uint32(OF_PBUBBLE_GET_VALUE0, (UINT) &multiplyPbubblePtr);
     patch::patch_uint32(OF_PBUBBLE_GET_VALUE1, (UINT) &multiplyPbubblePtr);
 
-    float ren_dist1 = 20000.0f;
+    float ren_dist1 = 20000.0f * cfg.pbubblescale;
 
-    ren_dist1 *= cfg.pbubblescale;
-
+    // 40000.0f is considered to be the maximum "safe" value
     if (ren_dist1 > 40000.0f)
         ren_dist1 = 40000.0f;
 
@@ -104,9 +94,8 @@ void graphics::init(bool version11)
     auto common = (DWORD) GetModuleHandleA("common.dll");
     unsigned int address = common + (version11 ? F_OF_VIBROCENTRICFONT_V11 : F_OF_VIBROCENTRICFONT_V10);
     patch::patch_bytes(address, (void*)garbageFont, 2);
-    //lod 0
-    patch_lodranges(&cfg.lodscale);
 
+    patch_lodranges();
     patch_pbubble();
     patch_characterdetail();
 }

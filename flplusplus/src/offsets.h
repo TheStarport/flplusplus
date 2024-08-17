@@ -1,13 +1,7 @@
 #pragma once
 
-#define OF_LODS_P1      (0x402389)
-#define OF_LODS_P2      (0x402309)
-#define OF_LODS_P3      (0x40230E)
-#define OF_LODS_P4      (0x40230B)
-
 #define OF_REN_DIST0    (0x613EC8)
 #define OF_REN_DIST1    (0x5C8910)
-
 
 #define OF_MAXTEXSIZE   (0x41AD6F)
 
@@ -15,13 +9,12 @@
 
 #define OF_PRINTSCREEN  (0x425170)
 
-#define F_OF_SOUNDMAN_MP3 (0x8660)
-#define F_OF_SOUNDSTR_MP3 (0x1000)
-
 #define OF_STARTLOCATION (0x43B348)
 
 #define F_OF_VIBROCENTRICFONT_V11 (0x143DC0)
 #define F_OF_VIBROCENTRICFONT_V10 (0x143D90)
+
+#define OF_LODS_GET_VALUE     (0x402385)
 
 #define OF_PBUBBLE_GET_VALUE0 (0x4FD82C)
 #define OF_PBUBBLE_GET_VALUE1 (0x4FD839)
