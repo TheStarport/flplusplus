@@ -20,6 +20,7 @@ namespace config {
         bool removestartlocationwarning;
         bool logtoconsole;
         float shippreviewscrollingspeed;
+        float shippreviewscrollingspeeddistancefactor;
         bool shippreviewscrollinginverse;
         float shippreviewscrollingmindistance;
         float shippreviewscrollingmaxdistance;
