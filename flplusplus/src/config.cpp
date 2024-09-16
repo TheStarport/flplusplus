@@ -22,6 +22,8 @@ void config::init_defaults()
     conf.logtoconsole = false;
     conf.shippreviewscrollingspeed = 2;
     conf.shippreviewscrollinginverse = false;
+    conf.shippreviewscrollingmindistance = 0.0f;
+    conf.shippreviewscrollingmaxdistance = 100.0f;
 }
 void config::init_from_file(const char *filename)
 {
@@ -69,6 +71,12 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("ship_preview_scrolling_inverse"))
                 conf.shippreviewscrollinginverse = reader.get_value_bool(0);
+
+            if (reader.is_value("ship_preview_scrolling_min_distance"))
+                conf.shippreviewscrollingmindistance = reader.get_value_float(0);
+
+            if (reader.is_value("ship_preview_scrolling_max_distance"))
+                conf.shippreviewscrollingmaxdistance = reader.get_value_float(0);
         }
     }
 
