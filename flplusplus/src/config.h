@@ -20,6 +20,8 @@ namespace config {
         float shippreviewscrollingspeed;
         bool shippreviewscrollinginverse;
         std::vector<std::string> fontfiles{};
+        bool msndump;
+        std::vector<int> srandoverrides{};
     };
     ConfigData& get_config();
 }

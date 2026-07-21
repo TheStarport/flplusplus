@@ -5,6 +5,7 @@ namespace patch {
 void detour(unsigned char* pOFunc, void* pHkFunc, unsigned char* originalData);
 void undetour(unsigned char* pOFunc, unsigned char* originalData);
 void patch_bytes(unsigned int address, void* pData, unsigned int pSize);
+void patch_jmp(unsigned char* pOFunc, void* pHkFunc);
 inline void patch_uint32(unsigned int address, unsigned int data)
 {
     patch_bytes(address, (void*)&data, 4);
@@ -25,6 +26,12 @@ inline void patch_x3(unsigned int address, unsigned char a, unsigned char b, uns
 {
     unsigned char bytes[] = { a, b, c };
     patch_bytes(address, (void*)bytes, 3);
+}
+inline void patch_call(unsigned int address, unsigned int new_function)
+{
+    unsigned char bytes[] = { 0xE8, 0, 0, 0, 0 };
+    *((unsigned int*)&bytes[1]) = new_function - address - 5;
+    patch_bytes(address, (void*)bytes, 5);
 }
 }
 

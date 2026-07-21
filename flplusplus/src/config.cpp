@@ -61,6 +61,18 @@ void config::init_from_file(const char *filename)
 
             if (reader.is_value("ship_preview_scrolling_inverse"))
                 conf.shippreviewscrollinginverse = reader.get_value_bool(0);
+
+            if (reader.is_value("msndump"))
+                conf.msndump = reader.get_value_bool(0);
+
+            if(reader.is_value("srand"))
+            {
+                int count = reader.get_num_parameters();
+                for(int i = 0; i < count; i++)
+                {
+                    conf.srandoverrides.emplace_back(reader.get_value_int(i));
+                }
+            }
         }
     }
 

@@ -21,11 +21,13 @@ add_library (flplusplus SHARED
     "src/consolewindow.cpp"
     "src/Common.cpp"
     "src/shippreviewscroll.cpp"
+    "src/msndump.cpp"
 )
 
-target_link_libraries(flplusplus shlwapi gdiplus shell32 dbghelp)
+target_link_libraries(flplusplus shlwapi gdiplus shell32 dbghelp msacm32)
 target_include_directories(flplusplus PUBLIC "include")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(flplusplus PUBLIC -static-libgcc -static-libstdc++ -static)
+    target_compile_options(flplusplus PUBLIC -msse -msse2 -msse3 -mfpmath=sse)
 endif()
 set_target_properties(flplusplus PROPERTIES PREFIX "")

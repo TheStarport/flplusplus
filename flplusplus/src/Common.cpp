@@ -14,6 +14,7 @@ const char* INI_Reader_JumpTable[] = {
     "?get_value_int@INI_Reader@@QAEHI@Z", 0,
     "?get_value_float@INI_Reader@@QAEMI@Z", 0,
     "?get_value_string@INI_Reader@@QAEPBDI@Z", 0,
+    "?get_num_parameters@INI_Reader@@QBEIXZ", 0,
     "?close@INI_Reader@@QAEXXZ", 0
 };
 JUMPTABLE_INIT("common.dll", INI_Reader_JumpTable)
@@ -30,4 +31,5 @@ FUNC(bool INI_Reader::get_value_bool(UINT index), 7)
 FUNC(int INI_Reader::get_value_int(UINT index), 8)
 FUNC(float INI_Reader::get_value_float(UINT index), 9)
 FUNC(LPCSTR INI_Reader::get_value_string(UINT index), 10)
-FUNC(void INI_Reader::close(), 11)
+FUNC(UINT INI_Reader::get_num_parameters(), 11)
+FUNC(void INI_Reader::close(), 12)

@@ -19,6 +19,7 @@ public:
     int get_value_int(UINT index);
     float get_value_float(UINT index);
     LPCSTR get_value_string(UINT index);
+    UINT get_num_parameters();
     void close();
 
 private:
